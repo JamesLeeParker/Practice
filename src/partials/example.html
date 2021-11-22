@@ -1,15 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
+<article class="example">
+  <h1>HTML-фрагменты</h1>
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prictice</title>
-</head>
+  <!-- Путь к изображениям из HTML-фрагмента такой, как из файла index.html -->
+  <img src="images/demo.jpg" alt="" width="320" />
+  <p>
+    Плагин
+    <a
+      href="https://github.com/posthtml/posthtml-include"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      posthtml-include
+    </a>
+    позволяет добавлять в HTML-файлы страниц код из других HTML-файлов (фрагментов). Фрагменты
+    хранятся в папке
+    <code>src/partials</code>. Добавление происходит при компиляции файлов страниц, например
+    <code>index.html</code>.
+  </p>
 
-<body>
-  <div id='menu'></div>
-</body>
+  <p>
+    Этот файл <code>example.html</code> &mdash; пример такого фрагмента, с разметкой определённой
+    части главной страницы. Это очень удобно при командной разработке на студенческих проектах,
+    когда в одном HTML-файле пишет несколько человек сразу.
+  </p>
 
-</html>
+  <p>
+    Синтаксис добавление фрагмента в главный файл:
+    <code> &lt;include src="./partials/имя-файла.html"&gt;&lt;/include&gt; </code>
+  </p>
+
+  <div class="background"></div>
+</article>

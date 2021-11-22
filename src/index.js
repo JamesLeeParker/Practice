@@ -1,77 +1,94 @@
 import './sass/main.scss';
 
-// const randomNum = (min, max) => {
-//   return Math.floor(Math.random() * (max - min) + min);
-// };
-
-// const rundomNumberPromis = (min, max) => {
-//   return new Promise((resolve, reject) => {
-//     setTimeout(() => {
-//       if (Math.random() > 0.3) resolve(randomNum(min, max));
-//       else reject('ERROR');
-//     }, randomNum(1000, 3000));
-//   });
-// };
-
-// rundomNumberPromis(1, 10)
-//   .then(num => {
-//     console.log('');
-//     console.log(num);
-//     console.log('');
-//   })
-//   .catch(err => console.log(`Oops - ${err}`));
-
-// rundomNumberPromis(1, 10)
-//   .then(num => rundomNumberPromis(1, 10).then(num2 => num2 + num))
-//   .then(num => rundomNumberPromis(1, 10).then(num2 => num2 + num))
-//   .then(num => rundomNumberPromis(1, 10).then(num2 => num2 + num))
-//   .then(num => console.log(num))
-//   .catch(err => console.log(`Opps - ${err}`));
-
-// const arrPromises = [];
-
-// for (let i = 0; i < 10; i++) {
-//   arrPromises.push(rundomNumberPromis(1, 10));
-// }
-
-// console.log(arrPromises);
-
-// Promise.all(arrPromises).then(promisses =>
-//   console.log(promisses.reduce((acc, item) => acc + item, 0)),
-// );
-
-const BASEURL = 'https://rickandmortyapi.com/api';
-
-const menuRef = document.querySelector('#menu');
-
-const getDataServer = (url = '/') => {
-  return fetch(BASEURL + url).then(response => response.json());
+const refs = {
+  menu: document.querySelector('#menu'),
+  characterList: document.querySelector('#character-list'),
+  pagination: document.querySelector('#pagination'),
 };
 
-getDataServer().then(data => renderMarkup(data));
+const BASE_URL = 'https://rickandmortyapi.com/api';
 
-const markupLink = ([text, href]) => `<a href="${href}">${text}</a>`;
-
-const renderMarkup = obj => {
-  const markup = Object.entries(obj).map(markupLink).join('');
-  menuRef.innerHTML = markup;
+const getDataServer = (url = '/') => {
+  return fetch(BASE_URL + url).then(response => response.json());
 };
 
 document.addEventListener('click', e => {
   if (e.target.tagName !== 'A') return false;
+  const link = e.target;
   e.preventDefault();
-  getDataServer(e.target.getAttribute('href').then(data => console.log(data)));
+  if (link.dataset.info === 'characters') {
+    getDataServer(e.target.getAttribute('href')).then(({ results, info }) => {
+      renderPagination(info);
+      renderMarkupCharacter(results);
+    });
+  }
+  getDataServer(e.target.getAttribute('href')).then(data => console.log(data));
 });
 
-// const markupLink = ([text, href]) => `<a href="${href.slice(BASE_URL.length)}">${text}</a>`;
+getDataServer().then(data => renderMarkup(data));
 
-// const renderMarkup = obj => {
-//   const markup = Object.entries(obj).map(markupLink).join('');
-//   refs.menu.innerHTML = markup;
-// };
+const markupLink = ([text, href]) =>
+  `<a data-info="${text}" href="${href.slice(BASE_URL.length)}">${text}</a>`;
 
-// document.addEventListener('click', e => {
-//   if (e.target.tagName !== 'A') return false;
-//   e.preventDefault();
-//   getDataServer(e.target.getAttribute('href')).then(data => console.log(data));
-// });
+const renderMarkup = obj => {
+  const markup = Object.entries(obj).map(markupLink).join('');
+  refs.menu.innerHTML = markup;
+};
+
+const markupCharacter = ({
+  id,
+  name,
+  status,
+  species,
+  gender,
+  location,
+  image,
+  created,
+  episode,
+}) => `<li class="item-base-info" data-id="${id}">
+  <div class="wrapper-img"><img src="${image}" alt="${name}" /></div>
+  <div class="wrapper-text">
+    <h3>Name: ${name}</h3>
+    <p>Species: ${species}</p>
+    <p>Location: ${location.name}</p>
+    <p>Gender: ${gender}</p>
+    <p>Status: ${status}</p>
+    <p>Created: ${createDate(created)}</p>
+    <p>Episodes: ${episode.length}</p>
+  </div>
+</li>`;
+
+const renderMarkupCharacter = array => {
+  const markup = array.map(markupCharacter).join('');
+  refs.characterList.innerHTML = markup;
+};
+
+const createDate = dateInfo => {
+  const date = new Date(dateInfo);
+
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate().toString().padStart(2, '0');
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minuts = date.getMinutes().toString().padStart(2, '0');
+  const seconds = date.getSeconds().toString().padStart(2, '0');
+  return `${day}.${month}.${year}  ${hours}:${minuts}:${seconds}`;
+};
+
+const renderPagination = info => {
+  let markup = '';
+  let currentPage = 1;
+  if (info.prev) {
+    currentPage = Number(info.prev.slice(info.prev.indexOf('=') + 1)) + 1;
+    console.log('✈️ ~ currentPage', currentPage);
+    markup += `<a data-info="characters" href="${info.prev.slice(BASE_URL.length)}"><-</a>`;
+  }
+  for (let i = 0; i <= info.pages; i++) {
+    markup += `<a class="${
+      currentPage === i ? 'active' : ''
+    }" data-info="characters" href="/character?page=${i}"> ${i} </a>`;
+  }
+  if (info.next)
+    markup += `<a data-info="characters" href="${info.next.slice(BASE_URL.length)}">-></a>`;
+  refs.pagination.innerHTML = markup;
+};
