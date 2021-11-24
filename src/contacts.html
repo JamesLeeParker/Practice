@@ -8,9 +8,29 @@
     <title>Document</title>
 </head>
 
+<style>
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        margin-bottom: 10px;
+
+    }
+
+    input {
+        margin-left: 10px;
+    }
+
+    button {
+        width: 80px;
+    }
+</style>
+
 <body>
 
-    <ul id="contacts"></ul>
+
 
     <form>
         <label for="">Name:<input type="text" name="name"></label>
@@ -18,8 +38,11 @@
         <label for="">Email:<input type="text" name="email"></label>
         <label for="">Phone:<input type="text" name="phone"></label>
         <label for="">Age:<input type="text" name="age"></label>
+        <label for="">Hiden:<input type="hidden" name="hiden"></label>
         <button>SUBMIT</button>
     </form>
+
+    <ul id="contacts"></ul>
 
     <script src="./contacts.js"></script>
 </body>
